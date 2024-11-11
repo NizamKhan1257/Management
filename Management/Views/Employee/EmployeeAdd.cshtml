@@ -1,0 +1,75 @@
+﻿@model ManagementDTOs.EmployeeDTO
+
+@{
+    ViewData["Title"] = "EmployeeAdd";
+}
+
+<h1>EmployeeAdd</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EmployeeAdd">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="EmpName" class="control-label"></label>
+                <input asp-for="EmpName" class="form-control" />
+                <span asp-validation-for="EmpName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StateId" class="control-label"></label>
+                <select asp-for="StateId" asp-items="ViewBag.State" class="form-control">
+                    <option value="">---Select--States---</option>
+                </select>
+                <span asp-validation-for="StateId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CityId" class="control-label"></label>
+                <select asp-for="CityId" asp-items="ViewBag.Cities" class="form-control">
+                    <option value="">---Select--Cities---</option>
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#StateId').change(function () {
+                var stateId = $(this).val();
+                $.ajax({
+                    url: '/Employee/GetCitiesByState', // Controller action ka URL
+                    type: 'GET',
+                    data: { stateId: stateId },
+                    success: function (data) {
+                        var cityDropdown = $('#CityId');
+                        cityDropdown.empty(); // Clear previous options
+                        cityDropdown.append('<option value="">---Select--Cities---</option>');
+                        $.each(data, function (i, city) {
+                            cityDropdown.append('<option value="' + city.cityId + '">' + city.cityName + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+}
